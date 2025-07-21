@@ -6,7 +6,9 @@ class GradeReportResponse(BaseModel):
     reasoning: Optional[str] = Field(None, description="Reasoning behind the score")
     grader: Optional[str] = Field(None, description="Name of the grader")
 class MasterGradeReportResponse(BaseModel):
-    gradeReports: List[GradeReportResponse] = Field(..., description="List of grading reports for each category")
+    gradeReports: Dict[str, GradeReportResponse] = Field(..., description="Map of grading reports for each category")
     overall_score: int = Field(..., description="Overall score based on all criteria")
     overall_feedback: Optional[str] = Field(None, description="Overall feedback on the prompt")
-    
+class OverallFeedbackResponse(BaseModel):
+    overall_score: int = Field(..., description="Overall score for the prompt")
+    overall_feedback: str = Field(..., description="Overall feedback for the prompt")

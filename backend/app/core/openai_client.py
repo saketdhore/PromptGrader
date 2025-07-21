@@ -22,7 +22,7 @@ class OpenAIClient:
             if not isinstance(grade_request.prompt, (str, list)):
                 raise ValueError("grade_request.prompt must be a string or a list of messages.")
             
-            response = self.client.responses.create(
+            response = self.client.responses.parse(
                 model=os.getenv("OPENAI_MODEL"),
                 input=grade_request.prompt,
                 instructions=system_instructions,
@@ -42,7 +42,7 @@ class OpenAIClient:
             raise e
     def mastergrade_prompt(self, prompt: PromptRequest, system_instructions: str) -> OverallFeedbackResponse:
         try:
-            response = self.client.responses.create(
+            response = self.client.responses.parse(
                 model=os.getenv("OPENAI_MODEL"),
                 input=prompt.prompt,
                 instructions=system_instructions,
@@ -61,6 +61,4 @@ class OpenAIClient:
             logger.error(f"Failed to create master grading response: {e}")
             raise e
 
-openai_client = OpenAIClient()
-logger.info("OpenAI client instance created and ready for use.")
             

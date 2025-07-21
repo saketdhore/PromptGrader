@@ -48,28 +48,29 @@ class MasterGrader:
 
 
             feedback_response: OverallFeedbackResponse = self.llm_client.mastergrade_prompt(
-                input_content=master_prompt,
+                prompt=master_prompt,
                 system_instructions=self.system_instructions
             )
 
             return MasterGradeReportResponse(
-                reports=list(reports.values()),
+                gradeReports=reports,
                 overall_score=feedback_response.overall_score,
                 overall_feedback=feedback_response.overall_feedback
             )
+
 
         except Exception as e:
             logger.error(f"Error grading prompt: {e}")
             raise e
 
-    def _build_master_prompt(self, prompt: PromptRequest, reports: Dict[str, GradeReportResponse], overall_score: int) -> str:
+    def _build_master_prompt(self, prompt: PromptRequest, reports: Dict[str, GradeReportResponse], overall_score: int) -> PromptRequest:
         report_sections = "\n".join(
             f"""## {category.capitalize()}:
     Score: {report.score}
     Reasoning: {report.reasoning}
     """ for category, report in reports.items()
         )
-        return f"""
+        refined_prompt =f"""
     # Original Prompt:
     {prompt.prompt}
 
@@ -79,6 +80,7 @@ class MasterGrader:
     # Overall Score:
     {overall_score}/100
     """
+        return PromptRequest(prompt=refined_prompt, tags=prompt.tags)
 
 
 

@@ -1,5 +1,5 @@
-from backend.app.core.graders import master_grader
-from fastapi import APIRouter, HTTPException
+from app.dependencies import get_master_grader
+from fastapi import APIRouter, HTTPException, Depends
 import logging
 from app.schemas.requestSchemas import PromptRequest
 from app.schemas.responseSchemas import GradeReportResponse, MasterGradeReportResponse
@@ -8,7 +8,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post("/grade", tags=["grading"], response_model=MasterGradeReportResponse, status_code=200)
-async def grade_prompt(request: PromptRequest):
+async def grade_prompt(request: PromptRequest ,master_grader=Depends(get_master_grader)) -> MasterGradeReportResponse:
     try:
         logger.info(f"Received prompt for grading: {request.prompt[0:50]}...")  # Log first 50 characters for brevity
 

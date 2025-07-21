@@ -1,6 +1,5 @@
-from backend.app.api.endpoints import grading as gradingRouter
+from app.api.endpoints import grading as grading_router
 from fastapi import FastAPI
-from app.api.endpoints import suggestions, refinePrompt
 import logging
 import uvicorn
 from dotenv import load_dotenv
@@ -16,7 +15,7 @@ app = FastAPI(
 )
 
 app.include_router(
-    gradingRouter.router,
+    grading_router.router,
     prefix="/api/v1",
     tags=["grading"]
 )
