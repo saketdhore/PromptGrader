@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from typing import Dict
 from app.core.graders.assistant_grader import AssistantGrader
 from app.schemas.requestSchemas import PromptRequest
@@ -33,28 +34,33 @@ class MasterGrader:
         self.system_instructions = system_instructions
         self.llm_client = openai_client
 
-    def master_grade(self, prompt: PromptRequest) -> MasterGradeReportResponse:
+    async def master_grade(self, prompt: PromptRequest) -> MasterGradeReportResponse:
         try:
-            reports = {
-                category: AssistantGrader(
-                name=f"{category.capitalize()} Grader",
-                system_instructions=instructions,
-                openai_client=self.llm_client
-            ).grade(prompt) for category, instructions in CATEGORIES }
+            tasks = [
+                AssistantGrader(
+                    name=f"{category.capitalize()} Grader",
+                    system_instructions=instructions,
+                    openai_client=self.llm_client
+                ).grade(prompt)
+                for category, instructions in CATEGORIES
+            ]
+
+            results = await asyncio.gather(*tasks)
+            reports = {category: result for (category, _), result in zip(CATEGORIES, results)}
 
             overall_score = sum(report.score for report in reports.values()) // len(reports)
 
             master_prompt = self._build_master_prompt(prompt=prompt, reports=reports, overall_score=overall_score)
 
 
-            feedback_response: OverallFeedbackResponse = self.llm_client.mastergrade_prompt(
+            feedback_response: OverallFeedbackResponse = await self.llm_client.mastergrade_prompt(
                 prompt=master_prompt,
                 system_instructions=self.system_instructions
             )
 
             return MasterGradeReportResponse(
-                gradeReports=reports,
-                overall_score=feedback_response.overall_score,
+                grade_reports=reports,
+                overall_score=overall_score,
                 overall_feedback=feedback_response.overall_feedback
             )
 

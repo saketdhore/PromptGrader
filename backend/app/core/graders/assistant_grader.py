@@ -11,10 +11,10 @@ class AssistantGrader:
         self.system_instructions = system_instructions
         self.llm_client = openai_client
 
-    def grade(self, prompt: PromptRequest) -> GradeReportResponse:
+    async def grade(self, prompt: PromptRequest) -> GradeReportResponse:
         try:
             logger.info(f"[{self.name}] Grading prompt: {prompt.prompt[0:50]}...")  # Log first 50 characters for brevity
-            return self.llm_client.grade_prompt(prompt, self.system_instructions)
+            return await self.llm_client.grade_prompt(prompt, self.system_instructions)
         except Exception as e:
             logger.error(f"[{self.name}] Error grading prompt: {e}")
             raise

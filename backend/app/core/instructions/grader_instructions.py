@@ -34,7 +34,8 @@ Evaluate for Readability, Instruction Precision, and Structure only.
 # Output (JSON only)
 {
     "score": <integer 0-100>,
-    "reason": "<Concise reason for score>"
+    "reason": "<Concise reason for score>",
+    "grader": "Clarity Grader"
 }
 """
 
@@ -74,7 +75,8 @@ Evaluate for Task Granularity, Constraints, Audience.
 # Output (JSON only)
 {
     "score": <integer 0-100>,
-    "reason": "<Concise reason for score>"
+    "reason": "<Concise reason for score>",
+    "grader": "Clarity Grader"
 }
 """
 
@@ -113,7 +115,8 @@ Evaluate for Memory, Processing, Decision Points, Integration.
 # Output (JSON only)
 {
     "score": <integer 0-100>,
-    "reason": "<Concise reason for score>"
+    "reason": "<Concise reason for score>",
+    "grader": "Complexity Grader"
 }
 """
 
@@ -153,7 +156,8 @@ Evaluate for Situation, Task, Action, Result.
 # Output (JSON only)
 {
     "score": <integer 0-100>,
-    "reason": "<Concise reason for score>"
+    "reason": "<Concise reason for score>",
+    "grader": "Completeness Grader"
 }
 """
 
@@ -193,7 +197,8 @@ Evaluate for Internal and Output Consistency.
 # Output (JSON only)
 {
     "score": <integer 0-100>,
-    "reason": "<Concise reason for score>"
+    "reason": "<Concise reason for score>",
+    "grader": "Consistency Grader"
 }
 """
 
