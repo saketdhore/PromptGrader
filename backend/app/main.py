@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.endpoints import suggestions, refinePrompt
 import logging
 import uvicorn
+from dotenv import load_dotenv
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -28,5 +29,9 @@ async def root():
     return {"message": "Welcome to the Prompt Scorer API!"}
 
 if __name__ == "__main__":
+    logger.info("Loading environment variables...")
+    load_dotenv()
+    logger.info("Environment variables loaded successfully.")
     logger.info("Starting FastAPI application...")
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    
