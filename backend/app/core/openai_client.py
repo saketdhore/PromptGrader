@@ -3,7 +3,7 @@ from openai import AsyncOpenAI
 import logging
 import os
 from pydantic import ValidationError
-from app.schemas.responseSchemas import ConsultantReportResponse, GradeReportResponse, OverallFeedbackResponse, OverallSuggestionResponse
+from app.schemas.responseSchemas import ConsultantReportResponse, GradeReportResponse, OverallFeedbackResponse, OverallSuggestionResponse, EngineerReportResponse
 from app.schemas.requestSchemas import PromptRequest
 
 logger = logging.getLogger(__name__)
@@ -104,4 +104,23 @@ class OpenAIClient:
 
         except Exception as e:
             logger.error(f"Failed to create master consultation response: {e}")
+            raise e
+    async def engineer_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptRequest:
+        try:
+            response = await self.client.responses.parse(
+                model=os.getenv("OPENAI_MODEL"),
+                input=prompt.prompt,
+                instructions=system_instructions,
+                text_format=PromptRequest,
+                temperature=0,
+            )
+            logger.info(f"[OpenAIClient] Raw response from OpenAI: {response}")
+            return response.output_parsed
+
+        except ValidationError as ve:
+            logger.error(f"Validation error parsing OpenAI response: {ve}")
+            raise ve
+
+        except Exception as e:
+            logger.error(f"Failed to create engineer response: {e}")
             raise e

@@ -4,6 +4,8 @@ from app.core.instructions.grader_instructions import MASTER_GRADER_SYSTEM_INSTR
 import logging
 from app.core.consultants.master_consultant import MasterConsultant
 from app.core.instructions.consultant_instructions import MASTER_CONSULTANT_SYSTEM_INSTRUCTIONS
+from app.core.engineers.engineer import Engineer
+from app.core.instructions.engineer_instructions import ENGINEER_SYSTEM_INSTRUCTIONS
 from dotenv import load_dotenv
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -25,6 +27,12 @@ master_consultant = MasterConsultant(
 )
 logger.info("Master consultant instance created and ready for use.")
 
+engineer = Engineer(
+    name="Prompt Engineer",
+    system_instructions=ENGINEER_SYSTEM_INSTRUCTIONS,
+    openai_client=openai_client
+)
+
 def get_openai_client() -> OpenAIClient:
     """
     Dependency to provide the OpenAI client instance.
@@ -44,3 +52,10 @@ def get_master_consultant() -> MasterConsultant:
     This can be used in FastAPI endpoints or other parts of the application.
     """
     return master_consultant
+
+def get_engineer() -> Engineer:
+    """
+    Dependency to provide the engineer instance.
+    This can be used in FastAPI endpoints or other parts of the application.
+    """
+    return engineer

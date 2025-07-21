@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from app.schemas.requestSchemas import PromptRequest
 from typing import Optional, Dict
 
 
@@ -23,7 +24,6 @@ class OverallFeedbackResponse(BaseModel):
 class OverallSuggestionResponse(BaseModel):
     overall_suggestion: str = Field(..., description="Overall suggestion for improving the prompt")
 
-
 class ConsultantReportResponse(BaseModel):
     suggestion: str = Field(..., description="Consultant's suggestion for improving the prompt")
     consultant: str = Field(..., description="Name of the consultant")
@@ -32,3 +32,7 @@ class ConsultantReportResponse(BaseModel):
 class MasterConsultantReportResponse(BaseModel):
     consultant_reports: Dict[str, ConsultantReportResponse] = Field(..., description="Map of consultant reports for each category")
     overall_suggestion: str = Field(..., description="Overall suggestion for improving the prompt")
+
+class EngineerReportResponse(BaseModel):
+    original_prompt: PromptRequest = Field(..., description="The original prompt provided by the user")
+    refined_prompt: PromptRequest = Field(..., description="The refined prompt after engineering")
