@@ -1,0 +1,24 @@
+# Ignore backend venv
+/backend/backend_venv/
+
+# Ignore environment variables
+/backend/.env
+
+# Ignore common Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
