@@ -52,7 +52,6 @@ async def root():
 
 if __name__ == "__main__":
     logger.info("Loading environment variables...")
-    load_dotenv()
     logger.info("Environment variables loaded successfully.")
     logger.info("Starting FastAPI application...")
     uvicorn.run(app, host="0.0.0.0", port=8000)

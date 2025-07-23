@@ -3,7 +3,7 @@ from app.schemas.requestSchemas import PromptRequest
 from app.schemas.responseSchemas import (
     GradeReportResponse, ConsultantReportResponse
 )
-from app.core.openai_client import OpenAIClient
+from app.core.clients.openai_client import OpenAIClient
 logger = logging.getLogger(__name__)
 class AssistantConsultant:
     def __init__(self, name: str, system_instructions: str, openai_client: OpenAIClient):

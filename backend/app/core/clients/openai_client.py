@@ -2,8 +2,22 @@ from openai import OpenAI
 from openai import AsyncOpenAI
 import logging
 import os
+from dotenv import load_dotenv
 from pydantic import ValidationError
 from app.schemas.responseSchemas import ConsultantReportResponse, GradeReportResponse, OverallFeedbackResponse, OverallSuggestionResponse, EngineerReportResponse
+from app.schemas.requestSchemas import PromptRequest
+
+logger = logging.getLogger(__name__)
+load_dotenv() 
+class OpenAIClient:
+    from openai import OpenAI, AsyncOpenAI
+import logging
+import os
+from pydantic import ValidationError
+from app.schemas.responseSchemas import (
+    ConsultantReportResponse, GradeReportResponse,
+    OverallFeedbackResponse, OverallSuggestionResponse, EngineerReportResponse
+)
 from app.schemas.requestSchemas import PromptRequest
 
 logger = logging.getLogger(__name__)
@@ -12,13 +26,22 @@ class OpenAIClient:
     def __init__(self, async_mode: bool = True):
         if os.getenv("ENV") == "test":
             raise RuntimeError("OpenAI calls are disabled in test mode")
+        
+        if os.getenv("GITHUB_ACTIONS") != "true":
+            from dotenv import load_dotenv
+            load_dotenv()
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY is not set")
+
         try:
             logger.info("Initializing OpenAI client...")
-            self.client = AsyncOpenAI() if async_mode else OpenAI()
+            self.client = AsyncOpenAI(api_key=api_key) if async_mode else OpenAI(api_key=api_key)
             logger.info("OpenAI client initialized successfully.")
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI client: {e}")
-            raise  # Stops execution, surfaces the error
+            raise
     async def grade_prompt(self, grade_request: PromptRequest, system_instructions: str) -> GradeReportResponse:
         try:
             # Validate the prompt is a string or list of dicts

@@ -14,9 +14,8 @@ from app.core.instructions.grader_instructions import (
     COMPLEXITY_GRADER_SYSTEM_INSTRUCTIONS,
     COMPLETENESS_GRADER_SYSTEM_INSTRUCTIONS,
     CONSISTENCY_GRADER_SYSTEM_INSTRUCTIONS,
-    MASTER_GRADER_SYSTEM_INSTRUCTIONS
 )
-from app.core.openai_client import OpenAIClient
+from app.core.clients.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)
 

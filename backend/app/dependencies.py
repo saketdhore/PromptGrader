@@ -1,4 +1,4 @@
-from app.core.openai_client import OpenAIClient
+from app.core.clients.openai_client import OpenAIClient
 from app.core.graders.master_grader import MasterGrader
 from app.core.instructions.grader_instructions import MASTER_GRADER_SYSTEM_INSTRUCTIONS
 import logging
@@ -8,6 +8,9 @@ from app.core.engineers.engineer import Engineer
 from app.core.instructions.engineer_instructions import ENGINEER_SYSTEM_INSTRUCTIONS
 from app.core.refiners.refiner import Refiner
 from app.core.instructions.refiner_instructions import REFINER_SYSTEM_INSTRUCTIONS
+from app.core.clients.openai_client import OpenAIClient
+
+
 from dotenv import load_dotenv
 load_dotenv()
 logger = logging.getLogger(__name__)

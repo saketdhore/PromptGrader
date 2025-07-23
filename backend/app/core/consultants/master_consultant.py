@@ -1,5 +1,5 @@
 from typing import Dict
-from app.core.openai_client import OpenAIClient
+from app.core.clients.openai_client import OpenAIClient
 from app.core.consultants.assistant_consultant import AssistantConsultant   
 from app.schemas.requestSchemas import PromptRequest
 import asyncio
