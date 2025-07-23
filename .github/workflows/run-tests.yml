@@ -10,22 +10,25 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # ✅ Load it here!
+
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: 📦 Install dependencies
-      working-directory: ./backend
-      run: |
-        pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: 📦 Install dependencies
+        working-directory: ./backend
+        run: |
+          pip install --upgrade pip
+          pip install -r ../requirements.txt
 
-    - name: 🧪 Run Pytest
-      working-directory: ./backend
-      run: |
-        pytest ../tests/ --maxfail=1 --disable-warnings
+      - name: 🧪 Run Pytest
+        working-directory: ./backend
+        run: |
+          pytest ../tests/ --maxfail=1 --disable-warnings
