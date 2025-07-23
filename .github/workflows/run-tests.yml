@@ -20,11 +20,12 @@ jobs:
         python-version: '3.11'
 
     - name: 📦 Install dependencies
-      working-directory: backend
+      working-directory: ./backend
       run: |
         pip install --upgrade pip
-        pip install -r backend/requirements.txt
+        pip install -r requirements.txt
 
     - name: 🧪 Run Pytest
+      working-directory: ./backend
       run: |
-        pytest tests/ --maxfail=1 --disable-warnings
+        pytest ../tests/ --maxfail=1 --disable-warnings
