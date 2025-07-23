@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # ✅ Load it here!
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: 📥 Checkout code
@@ -23,12 +23,12 @@ jobs:
           python-version: '3.11'
 
       - name: 📦 Install dependencies
-        working-directory: ./backend
+        working-directory: backend
         run: |
           pip install --upgrade pip
-          pip install -r ../requirements.txt
+          pip install -r requirements.txt
 
       - name: 🧪 Run Pytest
-        working-directory: ./backend
+        working-directory: backend
         run: |
           pytest ../tests/ --maxfail=1 --disable-warnings
