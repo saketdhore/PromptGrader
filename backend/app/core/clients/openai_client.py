@@ -4,21 +4,11 @@ import logging
 import os
 from dotenv import load_dotenv
 from pydantic import ValidationError
-from app.schemas.responseSchemas import ConsultantReportResponse, GradeReportResponse, OverallFeedbackResponse, OverallSuggestionResponse, EngineerReportResponse
-from app.schemas.requestSchemas import PromptRequest
+from app.schemas.response_schemas import ConsultantReportResponse, GradeReportResponse, OverallFeedbackResponse, OverallSuggestionResponse, PromptResponse
+from app.schemas.request_schemas import PromptRequest
 
 logger = logging.getLogger(__name__)
 load_dotenv() 
-class OpenAIClient:
-    from openai import OpenAI, AsyncOpenAI
-import logging
-import os
-from pydantic import ValidationError
-from app.schemas.responseSchemas import (
-    ConsultantReportResponse, GradeReportResponse,
-    OverallFeedbackResponse, OverallSuggestionResponse, EngineerReportResponse
-)
-from app.schemas.requestSchemas import PromptRequest
 
 logger = logging.getLogger(__name__)
 
@@ -130,13 +120,13 @@ class OpenAIClient:
         except Exception as e:
             logger.error(f"Failed to create master consultation response: {e}")
             raise e
-    async def engineer_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptRequest:
+    async def engineer_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptResponse:
         try:
             response = await self.client.responses.parse(
                 model=os.getenv("OPENAI_MODEL"),
                 input=prompt.prompt,
                 instructions=system_instructions,
-                text_format=PromptRequest,
+                text_format=PromptResponse,
                 temperature=0,
             )
             logger.info(f"[OpenAIClient] Raw response from OpenAI: {response}")
@@ -149,13 +139,13 @@ class OpenAIClient:
         except Exception as e:
             logger.error(f"Failed to create engineer response: {e}")
             raise e
-    async def refine_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptRequest:
+    async def refine_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptResponse:
         try:
             response = await self.client.responses.parse(
                 model = os.getenv("OPENAI_MODEL"),
                 input=prompt.prompt,
                 instructions = system_instructions,
-                text_format = PromptRequest,
+                text_format = PromptResponse,
                 temperature = 0
             )
             logger.info(f"[OpenAIClient] Raw response from OpenAI: {response}")

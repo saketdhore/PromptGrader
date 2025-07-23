@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
-from app.schemas.requestSchemas import PromptRequest
-from typing import Optional, Dict
+from app.schemas.request_schemas import PromptRequest
+from typing import Optional, Dict, List
 
 
-
+class PromptResponse(BaseModel):
+    prompt: str = Field(..., description="The prompt text to be graded or refined.")
+    tags: Optional[List[str]] = Field(None, description="Optional tags for categorizing the prompt.")
 class GradeReportResponse(BaseModel):
     score: int = Field(..., description="The score assigned to the prompt")
     reasoning: str = Field(..., description="Reasoning behind the score")
@@ -35,4 +37,4 @@ class MasterConsultantReportResponse(BaseModel):
 
 class EngineerReportResponse(BaseModel):
     original_prompt: PromptRequest = Field(..., description="The original prompt provided by the user")
-    refined_prompt: PromptRequest = Field(..., description="The refined prompt after engineering")
+    refined_prompt: PromptResponse = Field(..., description="The refined prompt after engineering")

@@ -1,10 +1,10 @@
 from typing import Dict
 from app.core.clients.openai_client import OpenAIClient
 from app.core.consultants.assistant_consultant import AssistantConsultant   
-from app.schemas.requestSchemas import PromptRequest
+from app.schemas.request_schemas import PromptRequest
 import asyncio
 import logging
-from app.schemas.responseSchemas import (
+from app.schemas.response_schemas import (
     MasterConsultantReportResponse,
     ConsultantReportResponse,
     MasterGradeReportResponse,

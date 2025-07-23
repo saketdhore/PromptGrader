@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock
 from app.main import app
 from app.api.endpoints.consulting import get_master_grader, get_master_consultant
-from app.schemas.responseSchemas import (
+from app.schemas.response_schemas import (
     MasterConsultantReportResponse,
     ConsultantReportResponse,
     MasterGradeReportResponse,

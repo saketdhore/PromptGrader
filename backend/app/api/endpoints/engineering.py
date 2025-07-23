@@ -1,7 +1,7 @@
 from app.dependencies import get_engineer, get_master_consultant, get_master_grader
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.requestSchemas import PromptRequest
-from app.schemas.responseSchemas import EngineerReportResponse
+from app.schemas.request_schemas import PromptRequest
+from app.schemas.response_schemas import EngineerReportResponse
 import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)

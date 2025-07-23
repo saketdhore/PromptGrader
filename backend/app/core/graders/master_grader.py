@@ -2,8 +2,8 @@ import logging
 import asyncio
 from typing import Dict
 from app.core.graders.assistant_grader import AssistantGrader
-from app.schemas.requestSchemas import PromptRequest
-from app.schemas.responseSchemas import (
+from app.schemas.request_schemas import PromptRequest
+from app.schemas.response_schemas import (
     GradeReportResponse,
     MasterGradeReportResponse,
     OverallFeedbackResponse

@@ -6,6 +6,7 @@
 
 # Ignore common Python artifacts
 __pycache__/
+.pytest_cache/
 *.pyc
 *.pyo
 *.pyd
@@ -22,3 +23,4 @@ venv.bak/
 # OS files
 .DS_Store
 Thumbs.db
+

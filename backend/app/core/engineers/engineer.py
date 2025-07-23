@@ -1,7 +1,7 @@
 import logging
 import asyncio
-from app.schemas.requestSchemas import PromptRequest
-from app.schemas.responseSchemas import EngineerReportResponse, MasterConsultantReportResponse, MasterGradeReportResponse
+from app.schemas.request_schemas import PromptRequest
+from app.schemas.response_schemas import EngineerReportResponse, MasterConsultantReportResponse, MasterGradeReportResponse
 
 logger = logging.getLogger(__name__)
 

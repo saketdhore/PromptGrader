@@ -1,6 +1,6 @@
 import logging
-from app.schemas.requestSchemas import PromptRequest
-from app.schemas.responseSchemas import GradeReportResponse
+from app.schemas.request_schemas import PromptRequest
+from app.schemas.response_schemas import GradeReportResponse
 from app.core.clients.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)

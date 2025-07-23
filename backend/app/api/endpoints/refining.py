@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.requestSchemas import PromptRequest, RefinePromptRequest
+from app.schemas.request_schemas import PromptRequest, RefinePromptRequest
+from app.schemas.response_schemas import PromptResponse
 from app.dependencies import get_refiner
 from typing import List
 import logging
@@ -7,8 +8,8 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.post("/refine", tags=["refining"], response_model=PromptRequest, status_code=200)
-async def refine(request: RefinePromptRequest, refiner=Depends(get_refiner)) -> PromptRequest:
+@router.post("/refine", tags=["refining"], response_model=PromptResponse, status_code=200)
+async def refine(request: RefinePromptRequest, refiner=Depends(get_refiner)) -> PromptResponse:
     try:
         logger.info(f"Received prompt for refining: {request.original_prompt.prompt[0:50]}...")
         response = await refiner.refine(request)
