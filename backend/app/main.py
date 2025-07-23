@@ -1,6 +1,7 @@
 from app.api.endpoints import grading as grading_router
 from app.api.endpoints import consulting as consulting_router
 from app.api.endpoints import engineering as engineering_router
+from app.api.endpoints import refining as refining_router
 from fastapi import FastAPI
 import logging
 import uvicorn
@@ -33,6 +34,12 @@ app.include_router(
     engineering_router.router,
     prefix="/api/v1",
     tags=["engineering"]
+)
+
+app.include_router(
+    refining_router.router,
+    prefix = "/api/v1",
+    tags=["refining"]
 )
 
 

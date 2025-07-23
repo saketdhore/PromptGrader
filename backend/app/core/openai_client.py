@@ -124,3 +124,22 @@ class OpenAIClient:
         except Exception as e:
             logger.error(f"Failed to create engineer response: {e}")
             raise e
+    async def refine_prompt(self, prompt: PromptRequest, system_instructions: str) -> PromptRequest:
+        try:
+            response = await self.client.responses.parse(
+                model = os.getenv("OPENAI_MODEL"),
+                input=prompt.prompt,
+                instructions = system_instructions,
+                text_format = PromptRequest,
+                temperature = 0
+            )
+            logger.info(f"[OpenAIClient] Raw response from OpenAI: {response}")
+            return response.output_parsed
+        
+        except ValidationError as ve:
+            logger.error(f"Validation error parsing OpenAI response: {ve}")
+            raise ve
+        except Exception as e:
+            logger.error(f"Failed to create refiner response: {e}")
+            raise e
+            
