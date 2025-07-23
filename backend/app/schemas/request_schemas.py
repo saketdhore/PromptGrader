@@ -10,15 +10,23 @@ class PromptRequest(BaseModel):
 
     @field_validator("prompt")
     @classmethod
-    def prompt_word_limit(cls, v):
-        word_count = len(v.split())
-        if word_count > MAX_WORDS:
-            raise ValueError(f"Prompt exceeds the {MAX_WORDS}-word limit (got {word_count} words).")
+    def validate_prompt(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                raise ValueError("Prompt must not be empty or whitespace.")
+            word_count = len(v.split())
+            if word_count > MAX_WORDS:
+                raise ValueError(f"Prompt exceeds the {MAX_WORDS}-word limit (got {word_count} words).")
+        elif isinstance(v, list):
+            if not v:
+                raise ValueError("Prompt list must not be empty.")
+        else:
+            raise ValueError("Prompt must be a string or a list.")
         return v
 
     @field_validator("tags")
     @classmethod
-    def tag_limit(cls, tags):
+    def validate_tags(cls, tags):
         if len(tags) > MAX_TAGS:
             raise ValueError(f"You can only provide up to {MAX_TAGS} tags.")
         return tags

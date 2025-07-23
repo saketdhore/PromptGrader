@@ -83,3 +83,12 @@ async def test_grade_invalid_schema(async_client):
     assert errors[0]['msg'] == 'Field required'
 
     app.dependency_overrides = {}
+    
+# ✅ Test 5: Empty prompt → should return 422
+@pytest.mark.asyncio
+async def test_empty_prompt_rejected(async_client):
+    response = await async_client.post("/api/v1/grade", json={"prompt": "   ", "tags": []})
+    assert response.status_code == 422
+    body = response.json()
+    assert isinstance(body["detail"], list)
+    assert any("Prompt must not be empty" in err["msg"] for err in body["detail"])
