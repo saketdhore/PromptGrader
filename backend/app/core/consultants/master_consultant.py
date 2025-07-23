@@ -1,9 +1,9 @@
+import logging
+import asyncio
 from typing import Dict
 from app.core.clients.openai_client import OpenAIClient
-from app.core.consultants.assistant_consultant import AssistantConsultant   
+from app.core.consultants.assistant_consultant import AssistantConsultant
 from app.schemas.request_schemas import PromptRequest
-import asyncio
-import logging
 from app.schemas.response_schemas import (
     MasterConsultantReportResponse,
     ConsultantReportResponse,
@@ -17,6 +17,7 @@ from app.core.instructions.consultant_instructions import (
     COMPLETENESS_CONSULTANT_SYSTEM_INSTRUCTIONS,
     CONSISTENCY_CONSULTANT_SYSTEM_INSTRUCTIONS,
 )
+from app.exceptions.errors import OpenAIServiceError, PromptValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -27,17 +28,20 @@ CATEGORIES = [
     ("completeness", COMPLETENESS_CONSULTANT_SYSTEM_INSTRUCTIONS),
     ("consistency", CONSISTENCY_CONSULTANT_SYSTEM_INSTRUCTIONS),
 ]
+
 class MasterConsultant:
     def __init__(self, name: str, system_instructions: str, openai_client: OpenAIClient):
         self.name = name
         self.system_instructions = system_instructions
         self.llm_client = openai_client
+
     async def is_alive(self):
         try:
-            await self.llm_client.list_models()  # or a lightweight call
+            await self.llm_client.list_models()
             return True
         except Exception:
             return False
+
     async def master_consult(self, prompt: PromptRequest, master_grader_report: MasterGradeReportResponse) -> MasterConsultantReportResponse:
         try:
             logger.info(f"[{self.name}] Starting assistant consultants...")
@@ -52,12 +56,11 @@ class MasterConsultant:
                 )
                 for category, instructions in CATEGORIES
             ]
-            
+
             results = await asyncio.gather(*tasks)
             logger.info(f"[{self.name}] All assistant consultants finished.")
 
             reports = {category: result for (category, _), result in zip(CATEGORIES, results)}
-            logger.info(f"[{self.name}] Building master prompt...")
             master_prompt = self._build_master_prompt(prompt=prompt, reports=reports, master_grader_report=master_grader_report)
             logger.info(f"[{self.name}] Sending master prompt to OpenAI...")
 
@@ -71,9 +74,19 @@ class MasterConsultant:
                 consultant_reports=reports,
                 overall_suggestion=suggestion_response.overall_suggestion
             )
+
+        except PromptValidationError as ve:
+            logger.warning(f"[{self.name}] Validation error: {ve}")
+            raise ve
+
+        except OpenAIServiceError as oe:
+            logger.error(f"[{self.name}] OpenAI service error: {oe}")
+            raise oe
+
         except Exception as e:
-            logger.error(f"[{self.name}] Error during master consultation: {e}")
-            raise e
+            logger.exception(f"[{self.name}] Unexpected error in master_consult: {e}")
+            raise OpenAIServiceError(f"Unexpected error in MasterConsultant: {e}") from e
+
     def _build_master_prompt(self, prompt: PromptRequest, reports: Dict[str, ConsultantReportResponse], master_grader_report: MasterGradeReportResponse) -> PromptRequest:
         report_sections = "\n".join(
             f"""## {category.capitalize()} Consultant:

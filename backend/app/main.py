@@ -3,6 +3,15 @@ from app.api.routes.consulting.router import router as consulting_router
 from app.api.routes.engineering.router import router as engineering_router
 from app.api.routes.refining.router import router as refining_router
 from app.api.routes.health import router as health_router
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from app.exceptions.handlers import (
+    http_exception_handler,
+    validation_exception_handler,
+    app_exception_handler,
+    generic_exception_handler
+)
+from app.exceptions.errors import AppBaseException
 
 from fastapi import FastAPI
 import logging
@@ -37,4 +46,8 @@ if __name__ == "__main__":
     load_dotenv()
     logger.info("Environment variables loaded successfully.")
     logger.info("Starting FastAPI application...")
+    app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(Exception, generic_exception_handler)
+    app.add_exception_handler(AppBaseException, app_exception_handler)
     uvicorn.run(app, host="0.0.0.0", port=8000)
