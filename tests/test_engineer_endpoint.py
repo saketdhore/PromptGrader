@@ -164,9 +164,7 @@ async def test_engineer_invalid_schema(async_client):
             "prompt": "Bad output format",
             "tags": []
         })
-
     errors = exc_info.value.errors()
     assert errors[0]["loc"][-1] == "tags"
     assert "valid list" in errors[0]["msg"]
-
     app.dependency_overrides = {}
