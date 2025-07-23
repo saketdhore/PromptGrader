@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 class OpenAIClient:
     def __init__(self, async_mode: bool = True):
+        if os.getenv("ENV") == "test":
+            raise RuntimeError("OpenAI calls are disabled in test mode")
         try:
             logger.info("Initializing OpenAI client...")
             self.client = AsyncOpenAI() if async_mode else OpenAI()
