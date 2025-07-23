@@ -16,7 +16,7 @@ def event_loop():
     loop.close()
 
 # ✅ Async test client
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def async_client():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
