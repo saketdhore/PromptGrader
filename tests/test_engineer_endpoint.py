@@ -2,7 +2,9 @@ import pytest
 from unittest.mock import AsyncMock
 from fastapi.exceptions import ResponseValidationError
 from app.main import app
-from app.api.endpoints.engineering import get_master_grader, get_master_consultant, get_engineer
+from app.dependencies.grader import get_master_grader
+from app.dependencies.consultant import get_master_consultant
+from app.dependencies.engineer import get_engineer
 from app.schemas.response_schemas import (
     MasterGradeReportResponse,
     MasterConsultantReportResponse,

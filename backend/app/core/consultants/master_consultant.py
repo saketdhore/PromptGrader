@@ -32,6 +32,12 @@ class MasterConsultant:
         self.name = name
         self.system_instructions = system_instructions
         self.llm_client = openai_client
+    async def is_alive(self):
+        try:
+            await self.llm_client.list_models()  # or a lightweight call
+            return True
+        except Exception:
+            return False
     async def master_consult(self, prompt: PromptRequest, master_grader_report: MasterGradeReportResponse) -> MasterConsultantReportResponse:
         try:
             logger.info(f"[{self.name}] Starting assistant consultants...")

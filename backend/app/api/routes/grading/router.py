@@ -1,4 +1,4 @@
-from app.dependencies import get_master_grader
+from app.dependencies.grader import get_master_grader
 from fastapi import APIRouter, HTTPException, Depends
 import logging
 from app.schemas.request_schemas import PromptRequest

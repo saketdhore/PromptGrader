@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock
 from fastapi.exceptions import ResponseValidationError
 from app.main import app
-from app.dependencies import get_refiner
+from app.dependencies.refiner import get_refiner
 from app.schemas.request_schemas import RefinePromptRequest, PromptRequest
 
 

@@ -32,6 +32,15 @@ class OpenAIClient:
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI client: {e}")
             raise
+    async def list_models(self):
+        return await self.client.models.list()
+    async def is_alive(self) -> bool:
+        try:
+            await self.list_models()
+            return True
+        except Exception:
+            return False
+
     async def grade_prompt(self, grade_request: PromptRequest, system_instructions: str) -> GradeReportResponse:
         try:
             # Validate the prompt is a string or list of dicts

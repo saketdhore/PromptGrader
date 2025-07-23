@@ -32,7 +32,12 @@ class MasterGrader:
         self.name = name
         self.system_instructions = system_instructions
         self.llm_client = openai_client
-
+    async def is_alive(self):
+        try:
+            self.llm_client.list_models()  # or a lightweight call
+            return True
+        except Exception:
+            return False
     async def master_grade(self, prompt: PromptRequest) -> MasterGradeReportResponse:
         try:
             tasks = [

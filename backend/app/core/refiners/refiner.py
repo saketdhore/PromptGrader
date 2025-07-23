@@ -8,6 +8,12 @@ class Refiner:
         self.name = name
         self.system_instructions = system_instructions
         self.llm_client = openai_client
+    async def is_alive(self):
+        try:
+            self.llm_client.list_models()  # or a lightweight call
+            return True
+        except Exception:
+            return False
     async def refine(self, refine_request: RefinePromptRequest) -> PromptResponse:
         try:
             logger.info(f"[{self.name}] Refining prompt: {refine_request.original_prompt.prompt[0:50]}...")

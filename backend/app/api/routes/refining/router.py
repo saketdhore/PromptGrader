@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.request_schemas import PromptRequest, RefinePromptRequest
+from app.schemas.request_schemas import RefinePromptRequest
 from app.schemas.response_schemas import PromptResponse
-from app.dependencies import get_refiner
-from typing import List
+from app.dependencies.refiner import get_refiner
 import logging
 
 router = APIRouter()

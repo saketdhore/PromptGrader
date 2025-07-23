@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock
 from app.main import app
-from app.api.endpoints.grading import get_master_grader
+from app.dependencies.grader import get_master_grader
 from app.schemas.response_schemas import MasterGradeReportResponse, GradeReportResponse
 from fastapi.exceptions import ResponseValidationError
 

@@ -1,4 +1,6 @@
-from app.dependencies import get_engineer, get_master_consultant, get_master_grader
+from app.dependencies.grader import get_master_grader
+from app.dependencies.consultant import get_master_consultant
+from app.dependencies.engineer import get_engineer
 from fastapi import APIRouter, HTTPException, Depends
 from app.schemas.request_schemas import PromptRequest
 from app.schemas.response_schemas import EngineerReportResponse
