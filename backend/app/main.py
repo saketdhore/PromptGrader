@@ -12,7 +12,9 @@ from app.exceptions.handlers import (
     generic_exception_handler
 )
 from app.exceptions.errors import AppBaseException
-
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.dependencies.limiter import limiter
 from fastapi import FastAPI
 import logging
 import uvicorn
@@ -23,12 +25,19 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
 app = FastAPI(
     title="PromptScore API",
     description="API for grading and refining prompts",
     version="1.0.0",
 )
+app.state.limiter = limiter
+
+# Register Handlers
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
+app.add_exception_handler(AppBaseException, app_exception_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # 🚀 Include routers
 app.include_router(grading_router, prefix="/api/v1", tags=["grading"])
@@ -46,8 +55,4 @@ if __name__ == "__main__":
     load_dotenv()
     logger.info("Environment variables loaded successfully.")
     logger.info("Starting FastAPI application...")
-    app.add_exception_handler(StarletteHTTPException, http_exception_handler)
-    app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(Exception, generic_exception_handler)
-    app.add_exception_handler(AppBaseException, app_exception_handler)
     uvicorn.run(app, host="0.0.0.0", port=8000)

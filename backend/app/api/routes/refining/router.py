@@ -3,10 +3,11 @@ from app.schemas.request_schemas import RefinePromptRequest
 from app.schemas.response_schemas import PromptResponse
 from app.dependencies.refiner import get_refiner
 import logging
-
+from app.dependencies.limiter import limiter
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+@limiter.limit("10/minute")
 @router.post("/refine", tags=["refining"], response_model=PromptResponse, status_code=200)
 async def refine(request: RefinePromptRequest, refiner=Depends(get_refiner)) -> PromptResponse:
     try:

@@ -3,10 +3,12 @@ from fastapi import APIRouter, HTTPException, Depends
 import logging
 from app.schemas.request_schemas import PromptRequest
 from app.schemas.response_schemas import MasterGradeReportResponse
+from app.dependencies.limiter import limiter
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+@limiter.limit("10/minute")
 @router.post("/grade", tags=["grading"], response_model=MasterGradeReportResponse, status_code=200)
 async def grade(request: PromptRequest ,master_grader=Depends(get_master_grader)) -> MasterGradeReportResponse:
     try:

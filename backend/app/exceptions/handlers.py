@@ -17,10 +17,18 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning(f"Validation error: {exc.errors()}")
+
+    clean_errors = []
+    for error in exc.errors():
+        if "ctx" in error and isinstance(error["ctx"].get("error"), Exception):
+            error["ctx"]["error"] = str(error["ctx"]["error"])
+        clean_errors.append(error)
+
     return JSONResponse(
         status_code=422,
-        content={"detail": "Invalid request format", "errors": exc.errors(), "code": "VALIDATION_ERROR"},
+        content={"detail": clean_errors, "code": "VALIDATION_ERROR"},
     )
+
 
 async def app_exception_handler(request: Request, exc: AppBaseException):
     logger.error(f"{exc.code}: {exc.message}")

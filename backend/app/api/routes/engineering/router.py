@@ -5,9 +5,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.schemas.request_schemas import PromptRequest
 from app.schemas.response_schemas import EngineerReportResponse
 import logging
+from app.dependencies.limiter import limiter
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+@limiter.limit("10/minute")
 @router.post("/engineer", tags=["engineering"], response_model=EngineerReportResponse, status_code=200)
 async def engineer(request: PromptRequest, engineer=Depends(get_engineer), master_consultant=Depends(get_master_consultant), master_grader=Depends(get_master_grader)) -> EngineerReportResponse:
     try:
