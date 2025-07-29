@@ -1,13 +1,14 @@
-from fastapi import status
+from fastapi import Depends, status
 from fastapi.responses import JSONResponse
-from app.dependencies.openai_client import get_openai_client
 from fastapi import APIRouter
+from app.dependencies.openai_client import get_openai_client
+
 router = APIRouter()
 
 @router.get("/readyz", tags=["Health"])
-async def readiness_probe():
-    openai_ok = await get_openai_client().is_alive()
-    # Add others as needed
+async def readiness_probe(openai = Depends(get_openai_client)):
+    openai_ok = await openai.is_alive()
+    # Add other checks if needed
 
     if openai_ok:
         return {"status": "ready", "openai": openai_ok}
@@ -16,4 +17,3 @@ async def readiness_probe():
         status_code=503,
         content={"status": "not ready", "openai": openai_ok}
     )
-
