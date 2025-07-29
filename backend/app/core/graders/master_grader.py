@@ -8,32 +8,15 @@ from app.schemas.response_schemas import (
     MasterGradeReportResponse,
     OverallFeedbackResponse
 )
-from app.core.instructions.grader_instructions import (
-    CLARITY_GRADER_SYSTEM_INSTRUCTIONS,
-    SPECIFICITY_GRADER_SYSTEM_INSTRUCTIONS,
-    COMPLEXITY_GRADER_SYSTEM_INSTRUCTIONS,
-    COMPLETENESS_GRADER_SYSTEM_INSTRUCTIONS,
-    CONSISTENCY_GRADER_SYSTEM_INSTRUCTIONS,
-)
 from app.core.clients.openai_client import OpenAIClient
 from app.exceptions.errors import OpenAIServiceError, PromptValidationError
-
 logger = logging.getLogger(__name__)
-
-CATEGORIES = [
-    ("clarity", CLARITY_GRADER_SYSTEM_INSTRUCTIONS),
-    ("specificity", SPECIFICITY_GRADER_SYSTEM_INSTRUCTIONS),
-    ("complexity", COMPLEXITY_GRADER_SYSTEM_INSTRUCTIONS),
-    ("completeness", COMPLETENESS_GRADER_SYSTEM_INSTRUCTIONS),
-    ("consistency", CONSISTENCY_GRADER_SYSTEM_INSTRUCTIONS),
-]
-
 class MasterGrader:
-    def __init__(self, name: str, system_instructions: str, openai_client: OpenAIClient):
+    def __init__(self, name: str, system_instructions: str, assistant_instructions: Dict[str, str], openai_client: OpenAIClient):
         self.name = name
         self.system_instructions = system_instructions
-        self.llm_client = openai_client
-
+        self.assistant_instructions = assistant_instructions
+        self.llm_client = openai_client        
     async def is_alive(self) -> bool:
         try:
             await self.llm_client.list_models()
@@ -44,16 +27,23 @@ class MasterGrader:
     async def master_grade(self, prompt: PromptRequest) -> MasterGradeReportResponse:
         try:
             logger.info(f"[{self.name}] Starting assistant graders for prompt.")
-            tasks = [
-                AssistantGrader(
+            grader_categories = ["clarity", "specificity", "complexity", "completeness","consistency"]
+            tasks = []
+
+            for category in grader_categories:
+                instruction = self.assistant_instructions.get(category)
+                if not instruction:
+                    raise ValueError(f"Missing instruction for {category}")
+                
+                grader = AssistantGrader(
                     name=f"{category.capitalize()} Grader",
-                    system_instructions=instructions,
+                    system_instructions=instruction,
                     openai_client=self.llm_client
-                ).grade(prompt)
-                for category, instructions in CATEGORIES
-            ]
+                )
+                tasks.append(grader.grade(prompt))
+
             results = await asyncio.gather(*tasks)
-            reports = {category: result for (category, _), result in zip(CATEGORIES, results)}
+            reports = {category: result for category, result in zip(grader_categories, results)}
 
             overall_score = sum(report.score for report in reports.values()) // len(reports)
 
