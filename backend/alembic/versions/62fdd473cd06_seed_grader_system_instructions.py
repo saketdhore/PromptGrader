@@ -1,4 +1,4 @@
-"""seed system instructions
+"""seed grader system instructions
 
 Revision ID: 62fdd473cd06
 Revises: 4ed950d61fa3

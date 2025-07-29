@@ -10,29 +10,17 @@ from app.schemas.response_schemas import (
     MasterGradeReportResponse,
     OverallSuggestionResponse
 )
-from app.core.instructions.consultant_instructions import (
-    CLARITY_CONSULTANT_SYSTEM_INSTRUCTIONS,
-    SPECIFICITY_CONSULTANT_SYSTEM_INSTRUCTIONS,
-    COMPLEXITY_CONSULTANT_SYSTEM_INSTRUCTIONS,
-    COMPLETENESS_CONSULTANT_SYSTEM_INSTRUCTIONS,
-    CONSISTENCY_CONSULTANT_SYSTEM_INSTRUCTIONS,
-)
 from app.exceptions.errors import OpenAIServiceError, PromptValidationError
 
 logger = logging.getLogger(__name__)
 
-CATEGORIES = [
-    ("clarity", CLARITY_CONSULTANT_SYSTEM_INSTRUCTIONS),
-    ("specificity", SPECIFICITY_CONSULTANT_SYSTEM_INSTRUCTIONS),
-    ("complexity", COMPLEXITY_CONSULTANT_SYSTEM_INSTRUCTIONS),
-    ("completeness", COMPLETENESS_CONSULTANT_SYSTEM_INSTRUCTIONS),
-    ("consistency", CONSISTENCY_CONSULTANT_SYSTEM_INSTRUCTIONS),
-]
+
 
 class MasterConsultant:
-    def __init__(self, name: str, system_instructions: str, openai_client: OpenAIClient):
+    def __init__(self, name: str, system_instructions: str, assistant_instructions: str, openai_client: OpenAIClient):
         self.name = name
         self.system_instructions = system_instructions
+        self.assistant_instructions = assistant_instructions
         self.llm_client = openai_client
 
     async def is_alive(self):
@@ -45,22 +33,22 @@ class MasterConsultant:
     async def master_consult(self, prompt: PromptRequest, master_grader_report: MasterGradeReportResponse) -> MasterConsultantReportResponse:
         try:
             logger.info(f"[{self.name}] Starting assistant consultants...")
-            tasks = [
-                AssistantConsultant(
+            consultant_categories = ["clarity", "specificity", "complexity", "completeness","consistency"]
+            tasks = []
+            for category in consultant_categories:
+                instruction = self.assistant_instructions.get(category)
+                if not instruction:
+                    raise ValueError(f"Missing Instructions for: {category}")
+                consultant = AssistantConsultant(
                     name=f"{category.capitalize()} Consultant",
-                    system_instructions=instructions,
+                    system_instructions=instruction,
                     openai_client=self.llm_client
-                ).consult(
-                    prompt=prompt,
-                    grade_report=master_grader_report.grade_reports[category]
                 )
-                for category, instructions in CATEGORIES
-            ]
-
+                tasks.append(consultant.consult(prompt=prompt, grade_report=master_grader_report.grade_reports[category]))
             results = await asyncio.gather(*tasks)
             logger.info(f"[{self.name}] All assistant consultants finished.")
 
-            reports = {category: result for (category, _), result in zip(CATEGORIES, results)}
+            reports = {category: result for category, result in zip(consultant_categories, results)}
             master_prompt = self._build_master_prompt(prompt=prompt, reports=reports, master_grader_report=master_grader_report)
             logger.info(f"[{self.name}] Sending master prompt to OpenAI...")
 
