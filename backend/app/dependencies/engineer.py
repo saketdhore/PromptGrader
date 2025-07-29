@@ -1,12 +1,11 @@
 from app.core.engineers.engineer import Engineer
 from app.dependencies.openai_client import get_openai_client
-from app.core.instructions.engineer_instructions import ENGINEER_SYSTEM_INSTRUCTIONS
+from fastapi import Request
 
-engineer = Engineer(
+def get_engineer(request: Request) -> Engineer:
+    engineer = Engineer(
     name="Prompt Engineer",
-    system_instructions=ENGINEER_SYSTEM_INSTRUCTIONS,
+    system_instructions=request.app.state.system_instructions["engineer"]["master"],
     openai_client=get_openai_client()
-)
-
-def get_engineer() -> Engineer:
+    )
     return engineer
