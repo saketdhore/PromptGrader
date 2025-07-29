@@ -9,4 +9,5 @@ def get_refiner(request: Request) -> Refiner:
         system_instructions=request.app.state.system_instructions["engineer"]["master"],
         openai_client=get_openai_client()
     )
+    return refiner
     
