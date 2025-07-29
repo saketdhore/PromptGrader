@@ -8,8 +8,6 @@ router = APIRouter()
 @router.get("/readyz", tags=["Health"])
 async def readiness_probe(openai = Depends(get_openai_client)):
     openai_ok = await openai.is_alive()
-    # Add other checks if needed
-
     if openai_ok:
         return {"status": "ready", "openai": openai_ok}
 
