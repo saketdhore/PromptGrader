@@ -1,10 +1,12 @@
 from fastapi import Depends
+from fastapi import APIRouter
 from app.dependencies.openai_client import get_openai_client
 from app.dependencies.grader import get_master_grader
 from app.dependencies.consultant import get_master_consultant
 from app.dependencies.engineer import get_engineer
 from app.dependencies.refiner import get_refiner
 
+router = APIRouter()
 @router.get("/statusz", tags=["Health"])
 async def status_probe(
     openai = Depends(get_openai_client),
