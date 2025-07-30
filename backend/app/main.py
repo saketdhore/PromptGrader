@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from contextlib import asynccontextmanager
 import logging
+import os
 import uvicorn
 
 from app.api.routes.grading.router import router as grading_router
@@ -39,11 +40,14 @@ logger = logging.getLogger(__name__)
 # ✅ Lifespan for startup/shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if os.getenv("ENV") == "test":
+        # 🧪 Skip DB load in test mode
+        yield
+        return
     async with AsyncSessionLocal() as db:
         result = await db.execute(select(SystemInstructions))
-        instructions = result.scalars().all()  # returns list of rows
+        instructions = result.scalars().all()
 
-        # Build: system_instructions[role][type] = content
         cached_instructions = {}
         for inst in instructions:
             if inst.role not in cached_instructions:
@@ -54,6 +58,7 @@ async def lifespan(app: FastAPI):
         print("✅ System instructions loaded into memory")
         yield
         print("🧹 DB session closed")
+
 
 
 # ✅ App instance
