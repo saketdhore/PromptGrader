@@ -5,6 +5,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from contextlib import asynccontextmanager
 import logging
 import uvicorn
@@ -22,8 +23,10 @@ from app.exceptions.handlers import (
     generic_exception_handler,
 )
 from app.exceptions.errors import AppBaseException
-from app.db.session import SessionLocal
+from app.db.session import AsyncSessionLocal
 from app.db.models.system_instructions import SystemInstructions
+from app.auth.router import router as auth_router
+
 
 
 # 🚀 Logging
@@ -36,9 +39,9 @@ logger = logging.getLogger(__name__)
 # ✅ Lifespan for startup/shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db: Session = SessionLocal()
-    try:
-        instructions = db.query(SystemInstructions).all()
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(SystemInstructions))
+        instructions = result.scalars().all()  # returns list of rows
 
         # Build: system_instructions[role][type] = content
         cached_instructions = {}
@@ -50,9 +53,8 @@ async def lifespan(app: FastAPI):
         app.state.system_instructions = cached_instructions
         print("✅ System instructions loaded into memory")
         yield
-    finally:
-        db.close()
         print("🧹 DB session closed")
+
 
 # ✅ App instance
 app = FastAPI(
@@ -77,6 +79,9 @@ app.include_router(consulting_router, prefix="/api/v1", tags=["consulting"])
 app.include_router(engineering_router, prefix="/api/v1", tags=["engineering"])
 app.include_router(refining_router, prefix="/api/v1", tags=["refining"])
 app.include_router(health_router, prefix="/api/v1", tags=["Health"])
+app.include_router(auth_router, prefix="/auth", tags=["authentication"])
+
+
 
 # ✅ Root endpoint
 @app.get("/")
@@ -88,5 +93,6 @@ if __name__ == "__main__":
     logger.info("Loading environment variables...")
     load_dotenv()
     logger.info("Environment variables loaded successfully.")
+
     logger.info("Starting FastAPI application...")
     uvicorn.run(app, host="0.0.0.0", port=8000)

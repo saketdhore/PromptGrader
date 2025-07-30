@@ -25,7 +25,7 @@ if config.config_file_name is not None:
 from app.db.session import Base
 from app.db.models.system_instructions import SystemInstructions
 from app.db.models.dummy import DummyModel
-
+from app.db.models.user import User
 target_metadata = Base.metadata
 
 
