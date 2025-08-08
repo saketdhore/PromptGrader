@@ -22,10 +22,8 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from app.db.session import Base
-from app.db.models.system_instructions import SystemInstructions
-from app.db.models.dummy import DummyModel
-from app.db.models.user import User
+from app.db.base_class import Base
+from app.db import base
 target_metadata = Base.metadata
 
 
