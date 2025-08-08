@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, UniqueConstraint
-from app.db.session import Base
+from app.db.base_class import Base
 
 class SystemInstructions(Base):
     __tablename__ = "system_instructions"
