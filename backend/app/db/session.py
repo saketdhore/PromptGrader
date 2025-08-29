@@ -10,9 +10,9 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# 👇 This is the async engine for asyncpg
+# This is the async engine for asyncpg
 engine = create_async_engine(DATABASE_URL, pool_pre_ping=True)
 
-# 👇 Async session factory
+# Async session factory
 AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 

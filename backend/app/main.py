@@ -30,18 +30,18 @@ from app.auth.router import router as auth_router
 
 
 
-# 🚀 Logging
+#  Logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# ✅ Lifespan for startup/shutdown
+#  Lifespan for startup/shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if os.getenv("ENV") == "test":
-        # 🧪 Skip DB load in test mode
+        #  Skip DB load in test mode
         yield
         return
     async with AsyncSessionLocal() as db:
@@ -55,13 +55,13 @@ async def lifespan(app: FastAPI):
             cached_instructions[inst.role][inst.type] = inst.instructions
 
         app.state.system_instructions = cached_instructions
-        print("✅ System instructions loaded into memory")
+        print(" System instructions loaded into memory")
         yield
-        print("🧹 DB session closed")
+        print(" DB session closed")
 
 
 
-# ✅ App instance
+#  App instance
 app = FastAPI(
     title="PromptScore API",
     description="API for grading and refining prompts",
@@ -71,14 +71,14 @@ app = FastAPI(
 
 app.state.limiter = limiter
 
-# ✅ Register exception handlers
+#  Register exception handlers
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
 app.add_exception_handler(AppBaseException, app_exception_handler)
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# ✅ Register routers
+#  Register routers
 app.include_router(grading_router, prefix="/api/v1", tags=["grading"])
 app.include_router(consulting_router, prefix="/api/v1", tags=["consulting"])
 app.include_router(engineering_router, prefix="/api/v1", tags=["engineering"])
@@ -88,12 +88,12 @@ app.include_router(auth_router, prefix="/auth", tags=["authentication"])
 
 
 
-# ✅ Root endpoint
+#  Root endpoint
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Prompt Scorer API!"}
 
-# ✅ App entry point
+#  App entry point
 if __name__ == "__main__":
     logger.info("Loading environment variables...")
     load_dotenv()
